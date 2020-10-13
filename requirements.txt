@@ -1,0 +1,7 @@
+autopep8==1.5.4
+numpy==1.19.2
+opencv-contrib-python==4.1.1.26
+picamera==1.13
+pycodestyle==2.6.0
+RPi.GPIO==0.7.0
+toml==0.10.1
