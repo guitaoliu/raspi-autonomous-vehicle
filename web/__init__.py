@@ -1,0 +1,1 @@
+from .flasky import app
