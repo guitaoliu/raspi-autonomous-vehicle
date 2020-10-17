@@ -1,5 +1,8 @@
+import time
+
 
 from web import app
+from plugins.motor import test_motor
 
 
 def main():
@@ -9,6 +12,8 @@ def main():
         debug=True,
         threaded=True
     )
+    test_motor()
+
 
 if __name__ == "__main__":
     main()
