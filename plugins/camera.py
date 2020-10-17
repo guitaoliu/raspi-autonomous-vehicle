@@ -10,7 +10,7 @@ class Camera(object):
     frame = None
     last_access = 0
 
-    def initialize(self):
+    def initialize(self) -> None:
         if Camera.thread is None:
             # start background frame thread
             Camera.thread = threading.Thread(target=self._thread)
@@ -20,13 +20,13 @@ class Camera(object):
             while self.frame is None:
                 time.sleep(0)
 
-    def get_frame(self):
+    def get_frame(self) -> bool:
         Camera.last_access = time.time()
         self.initialize()
         return self.frame
 
     @classmethod
-    def _thread(cls):
+    def _thread(cls) -> None:
         with picamera.PiCamera() as camera:
             # camera setup
             camera.resolution = (640, 480)
