@@ -6,10 +6,11 @@ from config import Config
 
 
 class Motor:
+    """Motor is for controlling the movement of the car.
+    """
 
     def __init__(self):
-        """Motor is for controlling the movement of the car.
-        """
+
         GPIO.setup(Config.MOTOR_1_GPIO_BCM, GPIO.OUT)
         GPIO.setup(Config.MOTOR_2_GPIO_BCM, GPIO.OUT)
         GPIO.setup(Config.MOTOR_3_GPIO_BCM, GPIO.OUT)
@@ -116,5 +117,7 @@ def test_motor():
             pass
 
     except KeyboardInterrupt as e:
+        motor.stop()
+    finally:
         motor.stop()
         GPIO.cleanup()
