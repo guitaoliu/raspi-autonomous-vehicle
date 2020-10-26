@@ -19,6 +19,7 @@ class InfraRedSensor:
         self.right = Config.INFRARED_RIGHT_GPIO_BCM
         GPIO.setup(self.left, GPIO.IN)
         GPIO.setup(self.right, GPIO.IN)
+        logger.debug('Infrared sensor was initialized.')
 
     def measure(self) -> Tuple[int]:
         """Return the status of infrared sensor, if there is an obstacle, the related result is shown as True. Otherwise the result is False.
@@ -26,10 +27,10 @@ class InfraRedSensor:
         Returns:
             Tuple[bool]: (is_left_activated, is_right_activated)
         """
-        return (
-            not bool(GPIO.input(self.left)),
-            not bool(GPIO.input(self.right)),
-        )
+        left, right = not bool(GPIO.input(self.left)), not bool(
+            GPIO.input(self.right)),
+        logger.debug(f'Current infrared status: {left}, {right}.')
+        return (left, right)
 
 
 def test_infrared_sensor():
@@ -39,7 +40,6 @@ def test_infrared_sensor():
     try:
         while 1:
             left, right = infrared_sensor.measure()
-            logger.info(f'{left}, {right}')
             time.sleep(0.5)
     except KeyboardInterrupt as e:
         pass

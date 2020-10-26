@@ -1,3 +1,3 @@
-import RPi.GPIO as GPIO
+from RPi import GPIO
 
 GPIO.setmode(GPIO.BCM)

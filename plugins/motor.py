@@ -1,8 +1,12 @@
 import time
+import logging
 
 import RPi.GPIO as GPIO
 
 from config import Config
+
+
+logger = logging.getLogger(__name__)
 
 
 class Motor:
@@ -22,6 +26,7 @@ class Motor:
         self.motor_4 = GPIO.PWM(Config.MOTOR_4_GPIO_BCM, 500)
 
         self.initital()
+        logger.debug('Motor was initialized.')
 
     def initital(self) -> None:
         """Initialized the motor
@@ -38,6 +43,7 @@ class Motor:
         self.motor_2.stop()
         self.motor_3.stop()
         self.motor_4.stop()
+        logger.debug('Motor done.')
 
     def forward(self, speed: int) -> None:
         """Move forward
@@ -49,6 +55,7 @@ class Motor:
         self.motor_2.ChangeDutyCycle(0)
         self.motor_3.ChangeDutyCycle(speed)
         self.motor_4.ChangeDutyCycle(0)
+        logger.debug('Move forward!')
 
     def backword(self, speed: int) -> None:
         """Move backword
@@ -60,11 +67,13 @@ class Motor:
         self.motor_2.ChangeDutyCycle(speed)
         self.motor_3.ChangeDutyCycle(0)
         self.motor_4.ChangeDutyCycle(speed)
+        logger.debug('Move backwork!')
 
     def pause(self) -> None:
         """Stop the car
         """
         self.initital()
+        logger.debug('Pause')
 
     def turn_in_moving(self, speed_right: int, speed_left: int) -> None:
         """Seems cannot work.
@@ -88,6 +97,7 @@ class Motor:
         self.motor_2.ChangeDutyCycle(speed)
         self.motor_3.ChangeDutyCycle(speed)
         self.motor_4.ChangeDutyCycle(0)
+        logger.debug('Turn right.')
 
     def turn_left_in_place(self, speed: int) -> None:
         """Turn right with the right back wheel as the origin.
@@ -99,6 +109,7 @@ class Motor:
         self.motor_2.ChangeDutyCycle(0)
         self.motor_3.ChangeDutyCycle(0)
         self.motor_4.ChangeDutyCycle(speed)
+        logger.debug('Turn left.')
 
 
 def test_motor():
