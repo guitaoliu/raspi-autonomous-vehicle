@@ -21,36 +21,33 @@ class UltrasoundSensor:
     echo = Config.ULTRASOUND_ECHO_GPIO_BCM
 
     def initialize(self) -> None:
-        if UltrasoundSensor.thread is None:
 
-            UltrasoundSensor.thread = threading.Thread(target=self._thread)
+        if UltrasoundSensor.thread is None:
+            UltrasoundSensor.thread = threading.Thread(
+                target=self._thread, kwargs={
+                    'gpio': GPIO,
+                })
             UltrasoundSensor.thread.start()
             while self.distance is None:
                 pass
 
     @classmethod
-    def _thread(cls) -> None:
+    def _thread(cls, gpio: GPIO) -> None:
         """A seperated thread for ultrasound distance measurement.
         """
-        GPIO.setup(cls.trigger, GPIO.OUT)
-        GPIO.setup(cls.echo, GPIO.IN)
-
         while True:
-            GPIO.output(cls.trigger, 0)
-            time.sleep(0.000002)
-
+            time.sleep(Config.ULTRASOUND_SAMPLING_INTERVAL)
             GPIO.setmode(GPIO.BCM)
-            GPIO.setup(cls.trigger, GPIO.OUT)
+            GPIO.setup(cls.trigger, GPIO.OUT, initial=GPIO.LOW)
             GPIO.setup(cls.echo, GPIO.IN)
             GPIO.output(cls.trigger, 1)
-
             time.sleep(0.00001)
             GPIO.output(cls.trigger, 0)
 
             ch = GPIO.wait_for_edge(cls.echo, GPIO.RISING, timeout=100)
             if ch:
                 start = time.time()
-                while GPIO.input(cls.echo) == 1:
+                while gpio.input(cls.echo) == 1:
                     pass
                 time_elapsed = time.time() - start
                 cls.distance = 34000 * time_elapsed / 2
@@ -59,7 +56,7 @@ class UltrasoundSensor:
                 logger.debug(f'Lost echo wave')
                 cls.distance = -1
 
-            if time.time() - cls.last_access > 10:
+            if time.time() - cls.last_access > 5000:
                 break
 
         cls.thread = None

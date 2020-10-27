@@ -21,7 +21,7 @@ def main():
     # }))
     # flasky.start()
     # test_motor()
-    # test_infrared_sensor()
+    test_infrared_sensor()
     test_ultrasoud()
 
 
