@@ -1,3 +1,6 @@
 from RPi import GPIO
 
-GPIO.setmode(GPIO.BCM)
+from .camera import Camera
+from .infrared import InfraRedSensor
+from .motor import Motor
+from .ultrasound import UltrasoundSensor
