@@ -1,22 +1,21 @@
-from flask import Flask, render_template, Response
+from flask import Flask, Response, render_template
 
 from plugins.camera import Camera
 
-app = Flask(__name__, template_folder='./templates')
+app = Flask(__name__, template_folder="./templates")
 
 
-@app.route('/')
+@app.route("/")
 def index():
-    return render_template('index.html')
+    return render_template("index.html")
 
 
 def gen(camera):
     while True:
         frame = camera.get_frame()
-        yield (b'--frame\r\n'
-               b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
+        yield (b"--frame\r\n" b"Content-Type: image/jpeg\r\n\r\n" + frame + b"\r\n")
 
 
-@app.route('/cameraStream')
+@app.route("/cameraStream")
 def camera_stream():
-    return Response(gen(Camera()), mimetype='multipart/x-mixed-replace; boundary=frame')
+    return Response(gen(Camera()), mimetype="multipart/x-mixed-replace; boundary=frame")

@@ -1,18 +1,19 @@
-import time
 import logging
 import threading
+import time
 
 from RPi import GPIO
 
 from config import Config
 
-
 logger = logging.getLogger(__name__)
 
 
 class UltrasoundSensor:
-    """After instantiating the object, call get_distance directly to get the current ultrasonic range result.
+    """After instantiating the object, call get_distance
+    directly to get the current ultrasonic range result.
     """
+
     thread = None
     distance = None
     last_access = 0
@@ -24,17 +25,18 @@ class UltrasoundSensor:
 
         if UltrasoundSensor.thread is None:
             UltrasoundSensor.thread = threading.Thread(
-                target=self._thread, kwargs={
-                    'gpio': GPIO,
-                })
+                target=self._thread,
+                kwargs={
+                    "gpio": GPIO,
+                },
+            )
             UltrasoundSensor.thread.start()
             while self.distance is None:
                 pass
 
     @classmethod
     def _thread(cls, gpio: GPIO) -> None:
-        """A seperated thread for ultrasound distance measurement.
-        """
+        """A seperated thread for ultrasound distance measurement."""
         while True:
             time.sleep(Config.ULTRASOUND_SAMPLING_INTERVAL)
             GPIO.setmode(GPIO.BCM)
@@ -51,9 +53,9 @@ class UltrasoundSensor:
                     pass
                 time_elapsed = time.time() - start
                 cls.distance = 34000 * time_elapsed / 2
-                logger.debug(f'Distance measured as {cls.distance}cm')
+                logger.debug(f"Distance measured as {cls.distance}cm")
             else:
-                logger.debug(f'Lost echo wave')
+                logger.debug("Lost echo wave")
                 cls.distance = -1
 
             if time.time() - cls.last_access > 5000:

@@ -1,20 +1,19 @@
-import time
 import logging
+import time
 
 import RPi.GPIO as GPIO
 
 from config import Config
 
-
 logger = logging.getLogger(__name__)
 
 
 class Motor:
-    """Motor is for controlling the movement of the car.
-    """
+    """Motor is for controlling the movement of the car."""
 
     def __init__(self):
 
+        GPIO.setmode(GPIO.BCM)
         GPIO.setup(Config.MOTOR_1_GPIO_BCM, GPIO.OUT)
         GPIO.setup(Config.MOTOR_2_GPIO_BCM, GPIO.OUT)
         GPIO.setup(Config.MOTOR_3_GPIO_BCM, GPIO.OUT)
@@ -26,24 +25,24 @@ class Motor:
         self.motor_4 = GPIO.PWM(Config.MOTOR_4_GPIO_BCM, 500)
 
         self.initital()
-        logger.debug('Motor was initialized.')
+        logger.debug("Motor was initialized.")
 
     def initital(self) -> None:
-        """Initialized the motor
-        """
+        """Initialized the motor"""
         self.motor_1.start(0)
         self.motor_2.start(0)
         self.motor_3.start(0)
         self.motor_4.start(0)
 
     def stop(self) -> None:
-        """Stop the motor engine. After this process, you need to call Motor.initital to initialize the motor.
+        """Stop the motor engine.
+        After this process, you need to call Motor.initital to initialize the motor.
         """
         self.motor_1.stop()
         self.motor_2.stop()
         self.motor_3.stop()
         self.motor_4.stop()
-        logger.debug('Motor done.')
+        logger.debug("Motor done.")
 
     def forward(self, speed: int) -> None:
         """Move forward
@@ -55,7 +54,7 @@ class Motor:
         self.motor_2.ChangeDutyCycle(0)
         self.motor_3.ChangeDutyCycle(speed)
         self.motor_4.ChangeDutyCycle(0)
-        logger.debug('Move forward!')
+        logger.debug("Move forward!")
 
     def backword(self, speed: int) -> None:
         """Move backword
@@ -67,20 +66,21 @@ class Motor:
         self.motor_2.ChangeDutyCycle(speed)
         self.motor_3.ChangeDutyCycle(0)
         self.motor_4.ChangeDutyCycle(speed)
-        logger.debug('Move backwork!')
+        logger.debug("Move backwork!")
 
     def pause(self) -> None:
-        """Stop the car
-        """
+        """Stop the car"""
         self.initital()
-        logger.debug('Pause')
+        logger.debug("Pause")
 
     def turn_in_moving(self, speed_right: int, speed_left: int) -> None:
         """Seems cannot work.
 
         Args:
-            speed_right (int): motor electrical signal duty cycle for wheels in the left side, from 0 to 100.
-            speed_left (int): motor electrical signal duty cycle for wheels in the right side, from 0 to 100.
+            speed_right (int): motor electrical signal duty cycle
+                for wheels in the left side, from 0 to 100.
+            speed_left (int): motor electrical signal duty cycle
+                for wheels in the right side, from 0 to 100.
         """
         self.motor_1.ChangeDutyCycle(speed_right)
         self.motor_2.ChangeDutyCycle(0)
@@ -97,7 +97,7 @@ class Motor:
         self.motor_2.ChangeDutyCycle(speed)
         self.motor_3.ChangeDutyCycle(speed)
         self.motor_4.ChangeDutyCycle(0)
-        logger.debug('Turn right.')
+        logger.debug("Turn right.")
 
     def turn_left_in_place(self, speed: int) -> None:
         """Turn right with the right back wheel as the origin.
@@ -109,7 +109,7 @@ class Motor:
         self.motor_2.ChangeDutyCycle(0)
         self.motor_3.ChangeDutyCycle(0)
         self.motor_4.ChangeDutyCycle(speed)
-        logger.debug('Turn left.')
+        logger.debug("Turn left.")
 
 
 def test_motor():

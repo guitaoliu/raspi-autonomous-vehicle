@@ -1,19 +1,22 @@
-import time
 import logging
 import threading
-
+import time
 from typing import Tuple
+
 from RPi import GPIO
 
 from config import Config
-
 
 logger = logging.getLogger(__name__)
 
 
 class InfraRedSensor:
-    """The infrared sensors are mounted on the left and right front of the vehicle and can be used to monitor the presence of obstacles in their corresponding directions.
     """
+    The infrared sensors are mounted on the left and right front of
+    the vehicle and can be used to monitor the presence of obstacles
+    in their corresponding directions.
+    """
+
     thread = None
     last_access = 0
     left, right = False, False
@@ -29,10 +32,12 @@ class InfraRedSensor:
             InfraRedSensor.last_access = time.time()
             InfraRedSensor.thread = threading.Thread(target=self._thread)
             InfraRedSensor.thread.start()
-            logger.debug('Infrared sensor was initialized.')
+            logger.debug("Infrared sensor was initialized.")
 
     def get_result(self) -> Tuple[bool]:
-        """Return the status of infrared sensor, if there is an obstacle, the related result is shown as True. Otherwise the result is False.
+        """Return the status of infrared sensor, if there is an
+        obstacle, the related result is shown as True.
+        Otherwise the result is False.
 
         Returns:
             Tuple[bool]: (is_left_activated, is_right_activated)
@@ -51,7 +56,7 @@ class InfraRedSensor:
             GPIO.setup(cls.right_GPIO, GPIO.IN)
             cls.left = not bool(GPIO.input(cls.left_GPIO))
             cls.right = not bool(GPIO.input(cls.right_GPIO))
-            logger.debug(f'Current infrared status: {cls.left}, {cls.right}.')
+            logger.debug(f"Current infrared status: {cls.left}, {cls.right}.")
 
             if time.time() - cls.last_access > 5000:
                 break
