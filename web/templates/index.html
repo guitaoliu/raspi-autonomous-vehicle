@@ -9,7 +9,14 @@
 
 <body>
     <h1>Car Camera Preview</h1>
-    <img src="{{ url_for('camera_stream') }}" alt="">
+    <ul>
+        <li>
+            <img src="{{ url_for('camera_stream') }}" alt="">
+        </li>
+        <li>
+            <img src="{{ url_for('detect_result') }}" alt="">
+        </li>
+    </ul>
 </body>
 
 </html>

@@ -4,6 +4,9 @@ import time
 
 import picamera
 
+from core.object_detect import ObjectDetect
+
+detection = ObjectDetect()
 
 class Camera(object):
     thread = None
@@ -20,10 +23,15 @@ class Camera(object):
             while self.frame is None:
                 time.sleep(0)
 
-    def get_frame(self) -> bool:
+    def get_frame(self):
         Camera.last_access = time.time()
         self.initialize()
         return self.frame
+
+    def get_detected_frame(self):
+        Camera.last_access = time.time()
+        self.initialize()
+        return detection.gen_bytes(self.frame)
 
     @classmethod
     def _thread(cls) -> None:
@@ -36,7 +44,7 @@ class Camera(object):
             time.sleep(2)
 
             stream = io.BytesIO()
-            for foo in camera.capture_continuous(stream, "jpeg", use_video_port=True):
+            for _ in camera.capture_continuous(stream, "jpeg", use_video_port=True):
                 # store frame
                 stream.seek(0)
                 cls.frame = stream.read()
