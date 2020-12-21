@@ -42,7 +42,7 @@ class UltrasoundSensor:
             logger.debug(f"Current front distance: {distance}.")
         else:
             distance = None
-            logger.warning(f"Cannot get front distance.")
+            logger.warning("Cannot get front distance.")
         return distance
 
 
@@ -60,5 +60,5 @@ def test_ultrasound():
         GPIO.cleanup()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     test_ultrasound()

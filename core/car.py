@@ -1,6 +1,6 @@
 import enum
 
-from sensors import *
+from sensors import InfraRedSensor, Motor, UltrasoundSensor
 
 
 class CarStatus(enum.Enum):

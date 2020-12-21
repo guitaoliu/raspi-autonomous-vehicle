@@ -13,7 +13,7 @@ def index():
 
 def gen(ca: Camera):
     while True:
-        frame = ca.get_frame()
+        frame = ca.frame.tostring()
         yield b"--frame\r\n" b"Content-Type: image/jpeg\r\n\r\n" + frame + b"\r\n"
 
 

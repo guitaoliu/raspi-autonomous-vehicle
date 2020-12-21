@@ -53,5 +53,5 @@ def test_infrared_sensor():
         GPIO.cleanup()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     test_infrared_sensor()

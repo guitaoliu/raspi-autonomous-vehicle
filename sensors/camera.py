@@ -1,61 +1,32 @@
-import io
 import threading
 import time
 
+import cv2
+import numpy as np
 import picamera
-
-from core.object_detect import ObjectDetect
-
-detection = ObjectDetect()
+from picamera.array import PiRGBArray
 
 
-class Camera(object):
-    thread = None
-    frame = None
-    last_access = 0
+class Camera:
+    def __init__(self) -> None:
+        self.ca = picamera.PiCamera()
+        self.ca.resolution = (640, 480)
+        self.ca.framerate = 32
 
-    def initialize(self) -> None:
-        if Camera.thread is None:
-            # start background frame thread
-            Camera.thread = threading.Thread(target=self._thread)
-            Camera.thread.start()
+        self.array = PiRGBArray(self.ca, size=(640, 480))
+        self.array_np = None
+        self.frame = None
+        self.ca.start_preview()
 
-            # wait until frames start to be available
-            while self.frame is None:
-                time.sleep(0)
+        time.sleep(1)
+        threading.Thread(target=lambda: self.gen()).start()
 
-    def get_frame(self):
-        Camera.last_access = time.time()
-        self.initialize()
-        return self.frame
+    def gen(self):
+        for r in self.ca.capture_continuous(self.array, "bgr", use_video_port=True):
+            self.array_np = np.copy(r.array)
+            self.jpeg()
+            self.array.truncate(size=0)
 
-    def get_detected_frame(self):
-        Camera.last_access = time.time()
-        self.initialize()
-        return detection.gen_bytes(self.frame)
-
-    @classmethod
-    def _thread(cls) -> None:
-        with picamera.PiCamera() as camera:
-            # camera setup
-            camera.resolution = (640, 480)
-
-            # let camera warm up
-            camera.start_preview()
-            time.sleep(2)
-
-            stream = io.BytesIO()
-            for _ in camera.capture_continuous(stream, "jpeg", use_video_port=True):
-                # store frame
-                stream.seek(0)
-                cls.frame = stream.read()
-
-                # reset stream for next frame
-                stream.seek(0)
-                stream.truncate()
-
-                # if there hasn't been any clients asking for frames in
-                # the last 10 seconds stop the thread
-                if time.time() - cls.last_access > 10:
-                    break
-        cls.thread = None
+    def jpeg(self):
+        _, buf = cv2.imencode(".jpeg", self.array_np)
+        self.frame = buf
