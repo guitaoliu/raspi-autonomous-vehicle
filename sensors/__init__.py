@@ -6,5 +6,6 @@ from .motor import Motor
 from .ultrasound import UltrasoundSensor
 
 GPIO.setmode(GPIO.BCM)
+GPIO.setwarnings(False)
 
 __all__ = [Camera, InfraRedSensor, Motor, UltrasoundSensor]

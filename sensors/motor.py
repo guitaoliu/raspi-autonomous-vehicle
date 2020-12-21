@@ -35,7 +35,7 @@ class Motor:
 
     def stop(self) -> None:
         """Stop the motor engine.
-        After this process, you need to call Motor.initital to initialize the motor.
+        After this process, you need to call Motor.initialize to initialize the motor.
         """
         self.motor_1.stop()
         self.motor_2.stop()
