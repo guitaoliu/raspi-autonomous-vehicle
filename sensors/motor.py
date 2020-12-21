@@ -12,7 +12,6 @@ class Motor:
     """Motor is for controlling the movement of the car."""
 
     def __init__(self):
-
         GPIO.setmode(GPIO.BCM)
         GPIO.setup(Config.MOTOR_1_GPIO_BCM, GPIO.OUT)
         GPIO.setup(Config.MOTOR_2_GPIO_BCM, GPIO.OUT)
@@ -24,10 +23,10 @@ class Motor:
         self.motor_3 = GPIO.PWM(Config.MOTOR_3_GPIO_BCM, 500)
         self.motor_4 = GPIO.PWM(Config.MOTOR_4_GPIO_BCM, 500)
 
-        self.initital()
+        self.initialize()
         logger.debug("Motor was initialized.")
 
-    def initital(self) -> None:
+    def initialize(self) -> None:
         """Initialized the motor"""
         self.motor_1.start(0)
         self.motor_2.start(0)
@@ -56,8 +55,8 @@ class Motor:
         self.motor_4.ChangeDutyCycle(0)
         logger.debug("Move forward!")
 
-    def backword(self, speed: int) -> None:
-        """Move backword
+    def backward(self, speed: int) -> None:
+        """Move backward
 
         Args:
             speed (int): motor electrical signal duty cycle, from 0 to 100.
@@ -66,11 +65,11 @@ class Motor:
         self.motor_2.ChangeDutyCycle(speed)
         self.motor_3.ChangeDutyCycle(0)
         self.motor_4.ChangeDutyCycle(speed)
-        logger.debug("Move backwork!")
+        logger.debug("Move backward!")
 
     def pause(self) -> None:
         """Stop the car"""
-        self.initital()
+        self.initialize()
         logger.debug("Pause")
 
     def turn_in_moving(self, speed_right: int, speed_left: int) -> None:
@@ -118,7 +117,7 @@ def test_motor():
     try:
         motor.forward(50)
         time.sleep(2)
-        # motor.backword(50)
+        # motor.backward(50)
         # time.sleep(2)
         motor.turn_in_moving(50, 10)
         time.sleep(0.5)
@@ -127,8 +126,12 @@ def test_motor():
         while 1:
             pass
 
-    except KeyboardInterrupt as e:
+    except KeyboardInterrupt:
         motor.stop()
     finally:
         motor.stop()
         GPIO.cleanup()
+
+
+if __name__ == '__main__':
+    test_motor()

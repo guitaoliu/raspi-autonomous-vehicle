@@ -8,6 +8,7 @@ from core.object_detect import ObjectDetect
 
 detection = ObjectDetect()
 
+
 class Camera(object):
     thread = None
     frame = None

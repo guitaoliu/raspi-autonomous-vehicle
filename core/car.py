@@ -1,6 +1,6 @@
 import enum
 
-from plugins import Camera, InfraRedSensor, Motor, UltrasoundSensor
+from sensors import *
 
 
 class CarStatus(enum.Enum):
@@ -14,9 +14,9 @@ class CarStatus(enum.Enum):
     RIGHT = enum.auto()
     FAST_RIGHT = enum.auto()
     SLOW_RIGHT = enum.auto()
-    BACKWORD = enum.auto()
-    FAST_BACKWORD = enum.auto()
-    SLOW_BACKWORD = enum.auto()
+    BACKWARD = enum.auto()
+    FAST_BACKWARD = enum.auto()
+    SLOW_BACKWARD = enum.auto()
 
 
 class Car:
@@ -25,11 +25,9 @@ class Car:
     def __init__(self) -> None:
         self.status = CarStatus.STOP
         self.motor = Motor()
-        self.motor.initital()
-        infra_red_sensor = InfraRedSensor()
-        self.get_obstacle = infra_red_sensor.get_result
-        ultrasound_sensor = UltrasoundSensor()
-        self.get_distance = ultrasound_sensor.get_distance
+        self.motor.initialize()
+        self.get_obstacle = InfraRedSensor()
+        self.get_distance = UltrasoundSensor()
         self.update_move_status(CarStatus.FORWARD)
 
     def update_move_status(self, new_status: CarStatus) -> None:
@@ -70,14 +68,14 @@ class Car:
         elif self.status == CarStatus.SLOW_RIGHT:
             self.motor.turn_right_in_place(30)
             return True
-        elif self.status == CarStatus.BACKWORD:
-            self.motor.backword(50)
+        elif self.status == CarStatus.BACKWARD:
+            self.motor.backward(50)
             return True
-        elif self.status == CarStatus.FAST_BACKWORD:
-            self.motor.backword(80)
+        elif self.status == CarStatus.FAST_BACKWARD:
+            self.motor.backward(80)
             return True
-        elif self.status == CarStatus.SLOW_BACKWORD:
-            self.motor.backword(30)
+        elif self.status == CarStatus.SLOW_BACKWARD:
+            self.motor.backward(30)
             return True
         else:
             return False
