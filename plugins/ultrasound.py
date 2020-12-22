@@ -44,21 +44,3 @@ class UltrasoundSensor:
             distance = None
             logger.warning("Cannot get front distance.")
         return distance
-
-
-def test_ultrasound():
-    GPIO.setmode(GPIO.BCM)
-    sensor = UltrasoundSensor()
-    try:
-        while True:
-            time.sleep(0.5)
-            d = sensor()
-            print(d)
-    except KeyboardInterrupt:
-        pass
-    finally:
-        GPIO.cleanup()
-
-
-if __name__ == "__main__":
-    test_ultrasound()

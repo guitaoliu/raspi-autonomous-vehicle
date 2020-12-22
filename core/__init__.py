@@ -1,3 +1,4 @@
 from .car import Car
 
-__all__ = [Car]
+car = Car(True)
+__all__ = [car]

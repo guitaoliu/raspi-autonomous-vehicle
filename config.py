@@ -1,3 +1,6 @@
+import enum
+
+
 class Config:
     MOTOR_1_GPIO_BCM = 5
     MOTOR_2_GPIO_BCM = 6
@@ -15,3 +18,23 @@ class Config:
     SPEED_NORMAL = 50
     SPEED_FAST = 80
     SPEED_SLOW = 30
+
+    DETECT_LINE_NUMS = 4
+
+
+class CarStatus(enum.Enum):
+    INITIALIZE = 0
+    STOP = enum.auto()
+    PAUSE = enum.auto()
+    FORWARD = enum.auto()
+    FORWARD_FAST = enum.auto()
+    FORWARD_SLOW = enum.auto()
+    LEFT = enum.auto()
+    LEFT_FAST = enum.auto()
+    LEFT_SLOW = enum.auto()
+    RIGHT = enum.auto()
+    RIGHT_FAST = enum.auto()
+    RIGHT_SLOW = enum.auto()
+    BACKWARD = enum.auto()
+    BACKWARD_FAST = enum.auto()
+    BACKWARD_SLOW = enum.auto()

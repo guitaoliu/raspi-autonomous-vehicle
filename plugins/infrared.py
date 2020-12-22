@@ -1,5 +1,4 @@
 import logging
-import time
 from typing import Tuple
 
 from RPi import GPIO
@@ -37,21 +36,3 @@ class InfraRedSensor:
         right = not bool(GPIO.input(self.right))
         logger.debug(f"Infrared Status: {left}, {right}")
         return left, right
-
-
-def test_infrared_sensor():
-    GPIO.setmode(GPIO.BCM)
-    sensor = InfraRedSensor()
-    try:
-        while True:
-            time.sleep(0.5)
-            left, right = sensor()
-            print(left, right)
-    except KeyboardInterrupt:
-        pass
-    finally:
-        GPIO.cleanup()
-
-
-if __name__ == "__main__":
-    test_infrared_sensor()

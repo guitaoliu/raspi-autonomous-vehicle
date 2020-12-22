@@ -18,40 +18,32 @@ class Camera:
     """
 
     def __init__(self) -> None:
-        self.ca = picamera.PiCamera()
-        self.ca.resolution = (640, 480)
-        self.ca.framerate = 32
+        self._ca = picamera.PiCamera()
+        self._ca.resolution = (640, 480)
+        self._ca.framerate = 32
 
-        self.array = PiRGBArray(self.ca, size=(640, 480))
+        self.array = PiRGBArray(self._ca, size=(640, 480))
         self.array_np = None
         self.frame = None
-
-    def __enter__(self):
-        logger.debug("Camera started.")
         self.start()
-        return self
-
-    def __exit__(self, exc_type, exc_val, exc_tb):
-        logger.debug("Camera closed.")
-        self.ca.close()
 
     def start(self) -> None:
-        self.ca.start_preview()
-
+        self._ca.start_preview()
         time.sleep(1)
-        print("Process started")
+        logger.debug("Camera started")
         threading.Thread(target=lambda: self._gen()).start()
         time.sleep(1)
 
     def close(self):
-        self.ca.close()
+        logger.debug("Camera stopped")
+        self._ca.close()
 
     def _gen(self):
         """
         Generate raw numpy array and jpeg raw data. The numpy array is stored in self.array_np, and the jpeg data is
         stored in self.frame.
         """
-        for r in self.ca.capture_continuous(self.array, "bgr", use_video_port=True):
+        for r in self._ca.capture_continuous(self.array, "bgr", use_video_port=True):
             self.array_np = np.copy(r.array)
             self._jpeg()
             self.array.truncate(0)

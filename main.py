@@ -1,7 +1,10 @@
 import logging
 from threading import Thread
 
-from core import Car
+import RPi.GPIO as GPIO
+
+from config import CarStatus
+from core import car
 from web import app
 
 logger = logging.getLogger(__name__)
@@ -19,9 +22,14 @@ def main():
             threaded=True,
         )
     ).start()
-    with Car() as c:
-        while True:
-            c.update(c.status.FORWARD_FAST)
+    try:
+        with car as c:
+            while True:
+                c.track_line()
+    except KeyboardInterrupt:
+        car.update(CarStatus.STOP)
+        c.camera.close()
+        GPIO.cleanup()
 
 
 if __name__ == "__main__":
