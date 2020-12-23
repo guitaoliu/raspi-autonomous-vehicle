@@ -16,7 +16,7 @@ class Track:
         self._jpeg = None
 
     def __call__(self, img: ndarray) -> CarStatus:
-        status = self.track(img)
+        status = self.tr(img)
         return status
 
     @property
@@ -27,7 +27,7 @@ class Track:
     def jpeg(self):
         return self._jpeg
 
-    def track(self, img: ndarray) -> CarStatus:
+    def tr(self, img: ndarray) -> CarStatus:
         img = cv2.blur(img, (5, 5))
         _, _, img_red = cv2.split(img)
         _, dst = cv2.threshold(img_red, 20, 255, cv2.THRESH_BINARY)
@@ -42,8 +42,8 @@ class Track:
 
         # todo add control algorithm
 
-        return CarStatus.PAUSE
+        return CarStatus.FORWARD_FAST
 
     def convert_jpeg(self):
-        _, buf = cv2.imencode(".jpeg", self._img)
+        _, buf = cv2.imencode(".jpeg", self.array)
         self._jpeg = buf

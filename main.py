@@ -3,7 +3,6 @@ from threading import Thread
 
 import RPi.GPIO as GPIO
 
-from config import CarStatus
 from core import car
 from web import app
 
@@ -22,14 +21,12 @@ def main():
             threaded=True,
         )
     ).start()
-    try:
-        with car as c:
-            while True:
-                c.track_line()
-    except KeyboardInterrupt:
-        car.update(CarStatus.STOP)
-        c.camera.close()
-        GPIO.cleanup()
+    with car as c:
+        try:
+            c.run()
+        except KeyboardInterrupt:
+            c.camera.close()
+            GPIO.cleanup()
 
 
 if __name__ == "__main__":

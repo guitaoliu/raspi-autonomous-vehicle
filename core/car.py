@@ -9,8 +9,8 @@ logger = logging.getLogger(__name__)
 
 
 class Car:
-    def __init__(self, debug: bool) -> None:
-        self.status = [
+    def __init__(self) -> None:
+        self._status = [
             CarStatus.PAUSE,
         ]
         self.motor = Motor()
@@ -19,10 +19,8 @@ class Car:
         self.distance = UltrasoundSensor()
         self.track = Track()
 
-        self.debug = debug
-
-        self.loop = False
-        self.operates = {
+        self._is_loop = False
+        self._operates = {
             CarStatus.INITIALIZE: lambda: self.motor.initialize(),
             CarStatus.STOP: lambda: self.motor.stop(),
             CarStatus.PAUSE: lambda: self.motor.pause(),
@@ -51,36 +49,43 @@ class Car:
         }
 
     def __enter__(self):
-        self.loop = True
+        self._is_loop = True
         self._start()
         threading.Thread(target=self._loop).start()
         return self
 
     def __exit__(self, exc_type, exc_val, exc_tb) -> None:
-        self.loop = False
+        self._is_loop = False
         self._stop()
 
-    def track_line(self):
-        new_status = self.track(self.camera.array_np)
-        self.update(new_status)
+    def run(self, method="two_line"):
+        if method == "two_line":
+            while True:
+                time.sleep(Config.TRACK_PROCESS_INTERVAL)
+                self._track_line()
+        else:
+            logger.fatal(f"Method {method} is not supported")
 
-    def update(self, new_status: CarStatus) -> None:
-        self.status = [
+    def _update(self, new_status: CarStatus) -> None:
+        self._status = [
             new_status,
         ]
 
+    def _track_line(self):
+        new_status = self.track(self.camera.array_np)
+        self._update(new_status)
+
     def _start(self) -> None:
-        self.update(CarStatus.INITIALIZE)
-        self.update(CarStatus.PAUSE)
+        self.motor.initialize()
+        self._update(CarStatus.PAUSE)
 
     def _stop(self) -> None:
-        self.update(CarStatus.STOP)
+        self.motor.stop()
+        self._update(CarStatus.STOP)
 
     def _loop(self) -> None:
-        while self.loop:
-            if self.debug:
-                time.sleep(1)
+        while self._is_loop:
             self._move()
 
     def _move(self) -> None:
-        self.operates[self.status[0]]()
+        self._operates[self._status[0]]()

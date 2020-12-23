@@ -20,6 +20,7 @@ class Config:
     SPEED_SLOW = 30
 
     DETECT_LINE_NUMS = 4
+    TRACK_PROCESS_INTERVAL = 0.1
 
 
 class CarStatus(enum.Enum):

@@ -1,4 +1,4 @@
 from .car import Car
 
-car = Car(True)
+car = Car()
 __all__ = [car]
