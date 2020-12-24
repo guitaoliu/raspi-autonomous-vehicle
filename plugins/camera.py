@@ -11,7 +11,8 @@ logger = logging.getLogger(__name__)
 
 
 class Camera:
-    """Camera provide entry for get camera frames with formats of BGR numpy ndarray and raw jepg.
+    """Camera provide entry for get camera frames with formats of BGR numpy ndarray
+    and raw jepg.
 
     Please use Camera with context manager to avoid not closing the camera rightly.
 
@@ -40,8 +41,8 @@ class Camera:
 
     def _gen(self):
         """
-        Generate raw numpy array and jpeg raw data. The numpy array is stored in self.array_np, and the jpeg data is
-        stored in self.frame.
+        Generate raw numpy array and jpeg raw data. The numpy array is stored in
+        self.array_np, and the jpeg data isstored in self.frame.
         """
         for r in self._ca.capture_continuous(self.array, "bgr", use_video_port=True):
             self.array_np = np.copy(r.array)
