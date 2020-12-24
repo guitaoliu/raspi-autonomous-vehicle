@@ -3,7 +3,14 @@ import threading
 import time
 
 from config import CarStatus, Config
-from plugins import Camera, InfraRedSensor, Motor, Track, UltrasoundSensor
+from plugins import (
+    Camera,
+    InfraRedSensor,
+    Motor,
+    ObstacleAvoid,
+    Track,
+    UltrasoundSensor,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -18,6 +25,7 @@ class Car:
         self.obstacle = InfraRedSensor()
         self.distance = UltrasoundSensor()
         self.track = Track()
+        self.obstacle_avoid = ObstacleAvoid()
 
         self._is_loop = False
         self._operates = {
@@ -58,22 +66,32 @@ class Car:
         self._is_loop = False
         self._stop()
 
-    def run(self, method="two_line"):
-        if method == "two_line":
+    def run(self, method: str):
+        if method == "two_line_track":
             while True:
                 time.sleep(Config.TRACK_PROCESS_INTERVAL)
                 self._track_line()
+        elif method == "obstacle_avoid":
+            while True:
+                time.sleep(Config.TRACK_PROCESS_INTERVAL)
+                self._obstacle_avoid()
         else:
-            logger.fatal(f"Method {method} is not supported")
+            logger.fatal(f"Method {' '.join(method.split('_'))} is not supported")
 
     def _update(self, new_status: CarStatus) -> None:
         self._status = [
             new_status,
         ]
 
+    def _obstacle_avoid(self):
+        status = self.obstacle_avoid(
+            obstacle_status=self.obstacle, distance=self.distance
+        )
+        self._update(status)
+
     def _track_line(self):
-        new_status = self.track(self.camera.array_np)
-        self._update(new_status)
+        status = self.track(self.camera.array_np)
+        self._update(status)
 
     def _start(self) -> None:
         self.motor.initialize()
