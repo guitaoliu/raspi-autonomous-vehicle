@@ -5,6 +5,7 @@ import time
 from config import CarStatus, Config
 from plugins import (
     Camera,
+    Controller,
     InfraRedSensor,
     Motor,
     ObstacleAvoid,
@@ -20,16 +21,19 @@ class Car:
         self._status = [
             CarStatus.PAUSE,
         ]
+
+        # Plugins initialized
         self.motor = Motor()
         self.camera = Camera()
         self.obstacle = InfraRedSensor()
         self.distance = UltrasoundSensor()
         self.track = Track()
         self.obstacle_avoid = ObstacleAvoid()
+        self.controller = Controller()
 
+        # Motor related configs
         self._is_loop = False
         self._operates = {
-            CarStatus.INITIALIZE: lambda: self.motor.initialize(),
             CarStatus.STOP: lambda: self.motor.stop(),
             CarStatus.PAUSE: lambda: self.motor.pause(),
             CarStatus.FORWARD: lambda: self.motor.forward(Config.SPEED_NORMAL),
@@ -75,23 +79,31 @@ class Car:
             while True:
                 time.sleep(Config.TRACK_PROCESS_INTERVAL)
                 self._obstacle_avoid()
+        elif method == "bluetooth_controller":
+            while True:
+                time.sleep(Config.TRACK_PROCESS_INTERVAL)
+                self._bluetooth_controller()
         else:
             logger.fatal(f"Method {' '.join(method.split('_'))} is not supported")
 
-    def _update(self, new_status: CarStatus) -> None:
-        self._status = [
-            new_status,
-        ]
-
     def _obstacle_avoid(self):
         status = self.obstacle_avoid(
-            obstacle_status=self.obstacle, distance=self.distance
+            obstacle_status=self.obstacle(), distance=self.distance()
         )
         self._update(status)
 
     def _track_line(self):
         status = self.track(self.camera.array_np)
         self._update(status)
+
+    def _bluetooth_controller(self):
+        status = self.controller()
+        self._update(status)
+
+    def _update(self, new_status: CarStatus) -> None:
+        self._status = [
+            new_status,
+        ]
 
     def _start(self) -> None:
         self.motor.initialize()

@@ -24,7 +24,6 @@ class Config:
 
 
 class CarStatus(enum.Enum):
-    INITIALIZE = 0
     STOP = enum.auto()
     PAUSE = enum.auto()
     FORWARD = enum.auto()

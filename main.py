@@ -19,8 +19,8 @@ def load_parse() -> argparse.ArgumentParser:
         "-m",
         "--method",
         type=str,
-        default="two_line",
-        choices=["two_line_track", "obstacle_avoid"],
+        default="two_line_track",
+        choices=["two_line_track", "obstacle_avoid", "bluetooth_controller"],
         help="Car running method",
     )
     parser.add_argument("-w", "--web", action="store_true")
