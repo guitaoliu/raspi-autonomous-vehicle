@@ -22,9 +22,6 @@ class InfraRedSensor:
         GPIO.setup(self.right, GPIO.IN)
 
     def __call__(self) -> Tuple[bool, bool]:
-        return self.value()
-
-    def value(self) -> Tuple[bool, bool]:
         """Return the status of infrared sensor, if there is an
         obstacle, the related result is shown as True.
         Otherwise the result is False.

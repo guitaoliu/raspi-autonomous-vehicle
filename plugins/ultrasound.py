@@ -1,6 +1,5 @@
 import logging
 import time
-from typing import Optional
 
 from RPi import GPIO
 
@@ -21,9 +20,6 @@ class UltrasoundSensor:
         GPIO.setup(self.echo, GPIO.IN)
 
     def __call__(self) -> float:
-        return self.value()
-
-    def value(self) -> Optional[float]:
         """get the measure result of ultrasound sensor. The result is in centermeter.
 
         Returns:
@@ -41,6 +37,6 @@ class UltrasoundSensor:
             distance = 34000 * time_elapsed / 2
             logger.debug(f"Current front distance: {distance}.")
         else:
-            distance = None
+            distance = 999999
             logger.warning("Cannot get front distance.")
         return distance

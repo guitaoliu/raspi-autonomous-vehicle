@@ -28,7 +28,7 @@ class Motor:
         self.motor_2.start(0)
         self.motor_3.start(0)
         self.motor_4.start(0)
-        logger.debug("Motor was initialized.")
+        # logger.debug("Motor was initialized.")
 
     def stop(self) -> None:
         """Stop the motor engine.
@@ -38,7 +38,7 @@ class Motor:
         self.motor_2.stop()
         self.motor_3.stop()
         self.motor_4.stop()
-        logger.debug("Motor done.")
+        # logger.debug("Motor done.")
 
     def forward(self, speed: int) -> None:
         """Move forward
@@ -50,7 +50,7 @@ class Motor:
         self.motor_2.ChangeDutyCycle(0)
         self.motor_3.ChangeDutyCycle(speed)
         self.motor_4.ChangeDutyCycle(0)
-        logger.debug("Move forward!")
+        # logger.debug("Move forward!")
 
     def backward(self, speed: int) -> None:
         """Move backward
@@ -62,7 +62,7 @@ class Motor:
         self.motor_2.ChangeDutyCycle(speed)
         self.motor_3.ChangeDutyCycle(0)
         self.motor_4.ChangeDutyCycle(speed)
-        logger.debug("Move backward!")
+        # logger.debug("Move backward!")
 
     def pause(self) -> None:
         """Stop the car"""
@@ -70,7 +70,7 @@ class Motor:
         self.motor_2.ChangeDutyCycle(0)
         self.motor_3.ChangeDutyCycle(0)
         self.motor_4.ChangeDutyCycle(0)
-        logger.debug("Pause")
+        # logger.debug("Pause")
 
     def turn_right_in_place(self, speed: int) -> None:
         """Turn left with the left back wheel as the origin.
@@ -82,7 +82,7 @@ class Motor:
         self.motor_2.ChangeDutyCycle(speed)
         self.motor_3.ChangeDutyCycle(speed)
         self.motor_4.ChangeDutyCycle(0)
-        logger.debug("Turn right.")
+        # logger.debug("Turn right.")
 
     def turn_left_in_place(self, speed: int) -> None:
         """Turn right with the right back wheel as the origin.
@@ -94,4 +94,4 @@ class Motor:
         self.motor_2.ChangeDutyCycle(0)
         self.motor_3.ChangeDutyCycle(0)
         self.motor_4.ChangeDutyCycle(speed)
-        logger.debug("Turn left.")
+        # logger.debug("Turn left.")
