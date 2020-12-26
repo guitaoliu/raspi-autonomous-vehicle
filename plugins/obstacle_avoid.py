@@ -7,6 +7,9 @@ logger = logging.getLogger(__name__)
 
 
 class ObstacleAvoid:
+    def __init__(self):
+        pass
+
     def __call__(
         self, distance: float, obstacle_status: Tuple[bool, bool]
     ) -> CarStatus:
