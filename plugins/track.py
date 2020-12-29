@@ -2,6 +2,7 @@ import logging
 
 import cv2
 from numpy import ndarray
+from plugins.image_processing import processing, strategy
 
 from config import CarStatus, Config
 
@@ -28,21 +29,14 @@ class Track:
         return self._jpeg
 
     def tr(self, img: ndarray) -> CarStatus:
-        img = cv2.blur(img, (5, 5))
-        _, _, img_red = cv2.split(img)
-        _, dst = cv2.threshold(img_red, 20, 255, cv2.THRESH_BINARY)
-
-        height, width = dst.shape
-        img_gray = cv2.cvtColor(dst, cv2.COLOR_GRAY2RGB)
-        for i in range(0, height, self.lines):
-            pass
+        img_red, dst, img_gray = processing(img, self.lines)
 
         self._array = img_gray
         self.convert_jpeg()
 
-        # todo add control algorithm
+        car_status = strategy(img_gray)
 
-        return CarStatus.FORWARD_FAST
+        return car_status
 
     def convert_jpeg(self):
         _, buf = cv2.imencode(".jpeg", self.array)
