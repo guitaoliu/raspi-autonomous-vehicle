@@ -13,10 +13,10 @@ def processing(img: ndarray, lines: int = 4) -> Tuple:
     img_gray = cv2.cvtColor(dst, cv2.COLOR_GRAY2RGB)
     return img_red, dst, img_gray
 
-def scenraio_analyse(img: ndarray) -> List[PathType]:
+def scenario_analyse(img: ndarray) -> List[PathType]:
     height, width = img.shape
     diff_img = np.diff(img)
-    scenraio_list = []
+    scenario_list = []
 
     # identify number of edges according to positions of bw_edge and wb_edge 
     for row in diff_img:
@@ -24,30 +24,23 @@ def scenraio_analyse(img: ndarray) -> List[PathType]:
         wb_edge = np.argwhere(row<0).reshape(-1)
         if len(bw_edge)>0 and len(wb_edge)>0:
             if bw_edge.min() < wb_edge.max():
-                scenraio_list.append(PathType.BothSides)
+                scenario_list.append(PathType.BothSides)
             else:
-                scenraio_list.append(PathType.OneSide)
+                scenario_list.append(PathType.OneSide)
         elif len(bw_edge)>0 or len(wb_edge)>0:
-            scenraio_list.append(PathType.OneSide)
+            scenario_list.append(PathType.OneSide)
         else:
-            scenraio_list.append(PathType.NonSide)
+            scenario_list.append(PathType.NonSide)
     
-    return scenraio_list
-    # whole image scenraio is defined by the 
-    if scenraio_list.count() > 0.2 * height:
-        return PathType.BothSides
-    elif onesides_count > 0.1 * height:
-        return PathType.OneSide
-    else:
-        return PathType.NonSide
+    return scenario_list
 
-def BothSides_strategy(img: ndarray, scenraio_list: List[PathType]) -> CarStatus:
+def BothSides_strategy(img: ndarray, scenario_list: List[PathType]) -> CarStatus:
     height, width = img.shape
     center_position = []
 
     # 每行只保留俩个个黑色块
-    for i, scenraio in zip(range(0, height), scenraio_list):
-        if scenraio==PathType.BothSides:
+    for i, scenario in zip(range(0, height), scenario_list):
+        if scenario==PathType.BothSides:
             left_black = None
             right_bleck = None
             for j in range(0, width):
@@ -70,13 +63,13 @@ def BothSides_strategy(img: ndarray, scenraio_list: List[PathType]) -> CarStatus
     else:
         return CarStatus.FORWARD
 
-def OneSide_strategy(img: ndarray, scenraio_list: List[PathType]) -> CarStatus:
+def OneSide_strategy(img: ndarray, scenario_list: List[PathType]) -> CarStatus:
     height, width = img.shape
     black_position = []
 
     # 每行只保留第一个黑色块
-    for i in range(0, height):
-        if scenraio==PathType.OneSide:
+    for i, scenario in zip(range(0, height), scenario_list):
+        if scenario==PathType.OneSide:
         for j in range(0, width):
             if img[i][j] == 0:
                 bi[i][j] = 0.
@@ -94,7 +87,7 @@ def OneSide_strategy(img: ndarray, scenraio_list: List[PathType]) -> CarStatus:
     else:
         return CarStatus.FORWARD
 
-def strategy(img: ndarray, scenraio_list: List[PathType]) -> CarStatus:
+def strategy(img: ndarray, scenario_list: List[PathType]) -> CarStatus:
     height, width = img.shape
     bi = np.ones((height, width))
     black_position = []
