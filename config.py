@@ -41,6 +41,6 @@ class CarStatus(enum.Enum):
 
 
 class PathType(enum.Enum):
-    BothSides = enum.atuo()
+    BothSides = enum.auto()
     OneSide = enum.auto()
     NonSide = enum.auto()
