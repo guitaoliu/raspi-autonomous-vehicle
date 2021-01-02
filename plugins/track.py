@@ -2,9 +2,9 @@ import logging
 
 import cv2
 from numpy import ndarray
-from plugins.image_processing import processing, strategy
 
 from config import CarStatus, Config
+from plugins.image_processing import processing, strategy
 
 logger = logging.getLogger(__name__)
 

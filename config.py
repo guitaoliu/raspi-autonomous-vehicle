@@ -39,6 +39,7 @@ class CarStatus(enum.Enum):
     BACKWARD_FAST = enum.auto()
     BACKWARD_SLOW = enum.auto()
 
+
 class PathType(enum.Enum):
     BothSides = enum.atuo()
     OneSide = enum.auto()
