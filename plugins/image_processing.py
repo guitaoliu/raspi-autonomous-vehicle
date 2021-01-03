@@ -10,8 +10,11 @@ from config import CarStatus, PathType
 def processing(img: ndarray, lines: int = 4) -> Tuple:
     img = cv2.blur(img, (5, 5))
     _, _, img_red = cv2.split(img)
-    _, dst = cv2.threshold(img_red, 20, 255, cv2.THRESH_BINARY)
-
+    #Filtering background noise
+    for i,row in zip(range(img_red.shape[0]),img_red):
+        if np.average(row)<100:
+            img_red[i,:]=255
+    _, dst = cv2.threshold(img_red, 80, 255, cv2.THRESH_BINARY)
     img_gray = cv2.cvtColor(dst, cv2.COLOR_GRAY2RGB)
     return img_red, dst, img_gray
 
@@ -26,7 +29,7 @@ def scenario_analyse(img: ndarray) -> List[PathType]:
         bw_edge = np.argwhere(row > 0).reshape(-1)
         wb_edge = np.argwhere(row < 0).reshape(-1)
         if len(bw_edge) > 0 and len(wb_edge) > 0:
-            if bw_edge.min() < wb_edge.max():
+            if bw_edge.min() < wb_edge.max() :
                 scenario_list.append(PathType.BothSides)
             else:
                 scenario_list.append(PathType.OneSide)
@@ -88,7 +91,12 @@ def one_side_strategy(
     # lead the car with line slope
     # line slope is defined as average of black_positions' difference
     diff = np.diff(np.array(black_position))
-    slope = np.average(diff)
+    if np.sum(diff > 0) - np.sum(diff < 0) > np.sum(diff == 0):
+        slope = 1
+    elif np.sum(diff < 0) - np.sum(diff > 0) > np.sum(diff == 0):
+        slope = -1
+    else:
+        slope = 0
     if slope > 0:
         return CarStatus.LEFT
     elif slope < 0:
@@ -102,9 +110,9 @@ def strategy(img: ndarray, scenario_list: List[PathType]) -> CarStatus:
     bi = np.ones((height, width))
 
     # whole image scenario is defined by the scenario of rows
-    if scenario_list.count(PathType.BothSides) > 0.3 * height:
+    if scenario_list.count(PathType.BothSides) > 0.2 * height:
         whole_scenario = PathType.BothSides
-    elif scenario_list.count(PathType.OneSide) > 0.3 * height:
+    elif scenario_list.count(PathType.OneSide) > 0.2 * height:
         whole_scenario = PathType.OneSide
     else:
         whole_scenario = PathType.NonSide
