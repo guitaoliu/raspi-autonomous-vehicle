@@ -18,7 +18,7 @@ def processing(img: ndarray, lines: int = 4) -> Tuple:
 
 def scenario_analyse(img: ndarray) -> List[PathType]:
     height, width = img.shape
-    diff_img = np.diff(img)
+    diff_img = np.diff(img.astype(np.float32))
     scenario_list = []
 
     # identify number of edges according to positions of bw_edge and wb_edge
@@ -54,7 +54,7 @@ def both_sides_strategy(
                     bi[i][j] = 0.0
                     left_black = j
                     break
-            for j in range(width, 0, -1):
+            for j in range(width-1, -1, -1):
                 if img[i][j] == 0:
                     bi[i][j] = 0.0
                     right_black = j
