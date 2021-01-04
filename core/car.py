@@ -72,6 +72,7 @@ class Car:
 
     def run(self, method: str):
         if method == "two_line_track":
+            self.track.get_perspective_transform(self.camera.array_np)
             while True:
                 time.sleep(Config.TRACK_PROCESS_INTERVAL)
                 self._track_line()
