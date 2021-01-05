@@ -9,8 +9,9 @@ logger = logging.getLogger(__name__)
 
 
 class UltrasoundSensor:
-    """After instantiating the object, call the object
-    directly to get the current ultrasonic range result.
+    """
+    Ultrasonic sensors are installed in front of the car and can be used to obtain the
+    distance between the obstacle and the car.
     """
 
     def __init__(self) -> None:
@@ -19,8 +20,13 @@ class UltrasoundSensor:
         GPIO.setup(self.trigger, GPIO.OUT, initial=GPIO.LOW)
         GPIO.setup(self.echo, GPIO.IN)
 
+        self._last = 0
+        self._current = 0
+
     def __call__(self) -> float:
-        """get the measure result of ultrasound sensor. The result is in centermeter.
+        """
+        Call the object to get the measure result of ultrasound sensor.
+        The result is in centimeter.
 
         Returns:
             float: measure result.
@@ -28,7 +34,7 @@ class UltrasoundSensor:
         GPIO.output(self.trigger, 1)
         time.sleep(0.00001)
         GPIO.output(self.trigger, 0)
-        ch = GPIO.wait_for_edge(self.echo, GPIO.RISING, timeout=100)
+        ch = GPIO.wait_for_edge(self.echo, GPIO.RISING, timeout=300)
         if ch:
             start = time.perf_counter()
             while GPIO.input(self.echo) == 1:
@@ -39,4 +45,11 @@ class UltrasoundSensor:
         else:
             distance = 999999
             logger.warning("Cannot get front distance.")
-        return distance
+            return distance
+
+        self._last = self._moving_average(distance, self._last, 0.8)
+        return self._last
+
+    @staticmethod
+    def _moving_average(a: float, b: float, per: float) -> float:
+        return per * a + (1 - per) * b
