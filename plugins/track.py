@@ -3,16 +3,14 @@ import logging
 import cv2
 from numpy import ndarray
 
-from config import CarStatus, Config
-from plugins.image_processing import processing, strategy, perspective_transform
+from config import CarStatus
+from plugins.image_processing import perspective_transform, processing, strategy
 
 logger = logging.getLogger(__name__)
 
 
 class Track:
     def __init__(self):
-        self.lines = Config.DETECT_LINE_NUMS
-
         self._array = None
         self._jpeg = None
         self._transform_matrix = None
@@ -34,11 +32,12 @@ class Track:
         return self._transform_matrix
 
     def tr(self, img: ndarray) -> CarStatus:
-        img_red, dst, img_gray = processing(img, self._transform_matrix, self.lines)
+        img_red, dst, img_gray = processing(img, self._transform_matrix)
 
         self._array = img_gray
         self.convert_jpeg()
 
+        # todo fix me
         car_status = strategy(img_gray)
 
         return car_status
