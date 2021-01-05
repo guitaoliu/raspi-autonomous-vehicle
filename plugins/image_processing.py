@@ -1,9 +1,9 @@
 from typing import List, Tuple
 
 import cv2
+import matplotlib.pyplot as plt
 import numpy as np
 from numpy import ndarray
-import matplotlib.pyplot as plt
 
 from config import CarStatus, PathType
 
@@ -11,7 +11,7 @@ from config import CarStatus, PathType
 def get_pts1(img: ndarray) -> ndarray:
     plt.imshow(img)
     pts1 = plt.ginput(n=-1, timeout=0)
-    return pts1.astype('float32')
+    return pts1.astype("float32")
 
 
 def perspective_transform(img: ndarray) -> ndarray:
@@ -23,7 +23,7 @@ def perspective_transform(img: ndarray) -> ndarray:
     return transform_matrix
 
 
-def processing(img: ndarray, transform_matrix: ndarray, lines: int = 4) -> Tuple:
+def processing(img: ndarray, transform_matrix: ndarray) -> Tuple:
     # output size is changed to (600,600)
     img = cv2.warpPerspective(img, transform_matrix, (600, 600))
     img = cv2.blur(img, (5, 5))
@@ -47,7 +47,7 @@ def scenario_analyse(img: ndarray) -> List[PathType]:
         bw_edge = np.argwhere(row > 0).reshape(-1)
         wb_edge = np.argwhere(row < 0).reshape(-1)
         if len(bw_edge) > 0 and len(wb_edge) > 0:
-            if bw_edge.min() < wb_edge.max() :
+            if bw_edge.min() < wb_edge.max():
                 scenario_list.append(PathType.BothSides)
             else:
                 scenario_list.append(PathType.OneSide)
