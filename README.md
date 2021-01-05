@@ -14,7 +14,11 @@ python main.py --help
 
 ## Automatic Road Tracking
 
-## Bluetooth Joystick Controlled Movement
+## Bluetooth Gamepad Controlled Movement
+
+The controller provides interaction with the xbox one gamepad to control movement via the left stick, and RB and LB button provide deceleration and acceleration functions respectively.
+
+We ara using [xpadneo](https://github.com/atar-axis/xpadneo) to drive the gamepad and [python-evdev](https://github.com/gvalkov/python-evdev) to read the status of gamepad. Please follow the guide of xpadneo to connect your gamepad to Raspberry Pi and adjust setting in [controller.py](plugins/controller.py) to match your gamepad.
 
 ## Obstacle Avoidance
 
