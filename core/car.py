@@ -70,6 +70,10 @@ class Car:
         self._is_loop = False
         self._stop()
 
+    @property
+    def status(self) -> CarStatus:
+        return self._status[0]
+
     def run(self, method: str):
         if method == "two_line_track":
             self.track.get_perspective_transform(self.camera.array_np)
@@ -84,6 +88,9 @@ class Car:
             while True:
                 time.sleep(Config.TRACK_PROCESS_INTERVAL)
                 self._bluetooth_controller()
+        elif method == "debug":
+            while True:
+                time.sleep(Config.TRACK_PROCESS_INTERVAL)
         else:
             logger.fatal(f"Method {' '.join(method.split('_'))} is not supported")
 

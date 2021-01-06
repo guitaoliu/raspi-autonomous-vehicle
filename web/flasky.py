@@ -1,8 +1,10 @@
-from flask import Flask, Response, render_template
+from flask import Flask, Response, jsonify, render_template
+from flask_cors import CORS
 
 from core import car
 
-app = Flask(__name__, template_folder="./templates")
+app = Flask(__name__, template_folder="./templates", static_folder="./static")
+CORS(app, supports_credentials=True, resources=r"/*")
 
 
 @app.route("/")
@@ -20,11 +22,16 @@ def camera_stream():
     return Response(gen(), mimetype="multipart/x-mixed-replace; boundary=frame")
 
 
-@app.route("/grayStream")
-def gray_stream():
-    def gen():
-        while True:
-            frame = car.track.jpeg.tostring()
-            yield b"--frame\r\n" b"Content-Type: image/jpeg\r\n\r\n" + frame + b"\r\n"
-
-    return Response(gen(), mimetype="multipart/x-mixed-replace; boundary=frame")
+@app.route("/carStatus")
+def car_status():
+    obstacle_status = car.obstacle()
+    distance_data = car.distance()
+    status = str(car.status)
+    return jsonify(
+        {
+            "left": obstacle_status[0],
+            "right": obstacle_status[1],
+            "status": status,
+            "distance": distance_data,
+        }
+    )
