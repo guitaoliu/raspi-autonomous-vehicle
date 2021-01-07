@@ -1,50 +1,82 @@
 import logging
+from typing import Optional
 
 import cv2
+import numpy as np
 from numpy import ndarray
 
-from config import CarStatus
-from plugins.image_processing import perspective_transform, processing, strategy
+from config import CarStatus, Config
+from utils import convert_jpeg
 
 logger = logging.getLogger(__name__)
 
 
 class Track:
     def __init__(self):
-        self._array = None
         self._jpeg = None
-        self._transform_matrix = None
+        self._lines = Config.PROCESS_LINES
 
-    def __call__(self, img: ndarray) -> CarStatus:
-        status = self.tr(img)
+    def __call__(self, img: ndarray, method: Optional[str] = "basic") -> CarStatus:
+        if method == "basic":
+            status = self.basic(img)
+        elif method == "two":
+            status = self.other(img)
+        else:
+            status = CarStatus.PAUSE
+            logger.fatal(f"unknown method {method}")
         return status
-
-    @property
-    def array(self):
-        return self._array
 
     @property
     def jpeg(self):
         return self._jpeg
 
-    @property
-    def transform_matrix(self):
-        return self._transform_matrix
+    def other(self, img: ndarray) -> CarStatus:
+        dst = img
+        self._jpeg = convert_jpeg(dst)
+        return CarStatus.PAUSE
 
-    def tr(self, img: ndarray) -> CarStatus:
-        img_red, dst, img_gray = processing(img, self._transform_matrix)
+    def basic(self, img: ndarray) -> CarStatus:
+        img = cv2.blur(img, (5, 5))
+        _, _, img_red = cv2.split(img)
+        _, dst = cv2.threshold(img_red, 20, 255, cv2.THRESH_BINARY)
 
-        self._array = img_gray
-        self.convert_jpeg()
+        height, width = dst.shape
+        points_left = np.zeros((self._lines, 1))
+        points_right = np.zeros((self._lines, 1))
+        img_gray = cv2.cvtColor(dst, cv2.COLOR_GRAY2RGB)
 
-        # todo fix me
-        car_status = strategy(img_gray)
+        for i in range(self._lines):
+            current_height = height - 15 * (i + 1)
+            img_left = dst[current_height, 0 : width // 2 - 1]
+            img_right = dst[current_height, width // 2 : width - 1]
+            line_left, line_right = np.where(img_left == 0), np.where(img_right == 0)
 
-        return car_status
+            if len(line_left[0]):
+                points_left[i] = line_left[0][-1]
+                img_gray = cv2.circle(
+                    img_gray, (points_left[i], current_height), 4, (0, 0, 255), 10
+                )
+            else:
+                points_left[i] = 0
 
-    def convert_jpeg(self):
-        _, buf = cv2.imencode(".jpeg", self.array)
-        self._jpeg = buf
+            if len(line_right[0]):
+                points_right[i] = line_right[0][-1]
+                img_gray = cv2.circle(
+                    img_gray, (points_right[i], current_height), 4, (0, 0, 255), 10
+                )
+            else:
+                points_right[i] = width - 1
 
-    def get_perspective_transform(self, img: ndarray):
-        self._transform_matrix = perspective_transform(img)
+        self._jpeg = convert_jpeg(img_gray)
+
+        left = np.mean(np.array([p for p in points_left if p != 0]))
+        right = np.mean(np.array([p for p in points_right if p != width - 1]))
+        average = (left + right) / 2
+        offset = np.abs(average - width / 2)
+        if offset < Config.DETECT_OFFSET:
+            return CarStatus.FORWARD
+        else:
+            if average - width / 2 < 0:
+                return CarStatus.RIGHT
+            else:
+                return CarStatus.LEFT

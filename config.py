@@ -18,9 +18,12 @@ class Config:
     SPEED_SLOW = 30
 
     TRACK_PROCESS_INTERVAL = 0.1
+    PROCESS_LINES = 4
+    DETECT_OFFSET = 50
 
 
 class CarStatus(enum.Enum):
+    NONE = enum.auto
     STOP = enum.auto()
     PAUSE = enum.auto()
     FORWARD = enum.auto()

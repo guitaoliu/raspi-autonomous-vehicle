@@ -34,6 +34,7 @@ class Car:
         # Motor related configs
         self._is_loop = False
         self._operates = {
+            CarStatus.NONE: lambda: 1,
             CarStatus.STOP: lambda: self.motor.stop(),
             CarStatus.PAUSE: lambda: self.motor.pause(),
             CarStatus.FORWARD: lambda: self.motor.forward(Config.SPEED_NORMAL),
@@ -76,7 +77,6 @@ class Car:
 
     def run(self, method: str):
         if method == "two_line_track":
-            self.track.get_perspective_transform(self.camera.array_np)
             while True:
                 time.sleep(Config.TRACK_PROCESS_INTERVAL)
                 self._track_line()
