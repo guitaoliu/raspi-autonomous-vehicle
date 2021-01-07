@@ -5,3 +5,5 @@ evdev
 matplotlib
 torch
 Pillow
+opencv-contrib-python
+RPi.GPIO
