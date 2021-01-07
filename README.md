@@ -62,6 +62,11 @@ adjust setting in [controller.py](plugins/controller.py) to match your gamepad.
 
 ## Obstacle Avoidance
 
+Obstacle avoidance is based on ultrasonic sensors and infrared sensors. Motion decisions
+are made based on these two data, with the ultrasonic sensor data playing a dominant
+judgment role due to the close detection distance of the infrared sensor. The processing
+logic is defined in [obstacle_avoid.py](plugins/obstacle_avoid.py).
+
 ## Authors
 
 * [guitaoliu](https://github.com/guitaoliu)

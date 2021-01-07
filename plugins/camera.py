@@ -2,10 +2,11 @@ import logging
 import threading
 import time
 
-import cv2
 import numpy as np
 import picamera
 from picamera.array import PiRGBArray
+
+from utils import convert_jpeg
 
 logger = logging.getLogger(__name__)
 
@@ -45,12 +46,5 @@ class Camera:
         """
         for r in self._ca.capture_continuous(self.array, "bgr", use_video_port=True):
             self.array_np = np.copy(r.array)
-            self._jpeg()
+            self.frame = convert_jpeg(self.array_np)
             self.array.truncate(0)
-
-    def _jpeg(self):
-        """
-        Convert raw numpy array to jpeg data.
-        """
-        _, buf = cv2.imencode(".jpeg", self.array_np)
-        self.frame = buf

@@ -1,4 +1,4 @@
-from flask import Flask, Response, jsonify, render_template
+from flask import Flask, Response, jsonify, render_template, request
 from flask_cors import CORS
 
 from core import car
@@ -14,9 +14,16 @@ def index():
 
 @app.route("/cameraStream")
 def camera_stream():
+    source_type = request.args.get("type", default="plain", type=str)
+
     def gen():
         while True:
-            frame = car.camera.frame.tostring()
+            if source_type == "plain":
+                frame = car.camera.frame.tostring()
+            elif source_type == "twoLine":
+                frame = car.track.jpeg
+            else:
+                frame = car.camera.frame.tostring()
             yield b"--frame\r\n" b"Content-Type: image/jpeg\r\n\r\n" + frame + b"\r\n"
 
     return Response(gen(), mimetype="multipart/x-mixed-replace; boundary=frame")
