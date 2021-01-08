@@ -37,7 +37,7 @@ class Track:
 
     def basic(self, img: ndarray) -> CarStatus:
         img = cv2.blur(img, (5, 5))
-        _, _, img_red = cv2.split(img)
+        img_green, img_blue, img_red = cv2.split(img)
         _, dst = cv2.threshold(img_red, 20, 255, cv2.THRESH_BINARY)
 
         height, width = dst.shape
@@ -46,13 +46,13 @@ class Track:
         img_gray = cv2.cvtColor(dst, cv2.COLOR_GRAY2RGB)
 
         for i in range(self._lines):
-            current_height = height - 15 * (i + 1)
-            img_left = dst[current_height, 0 : width // 2 - 1]
-            img_right = dst[current_height, width // 2 : width - 1]
+            current_height = height - 1 - 15 * i
+            img_left = dst[current_height, 0 : width // 2]
+            img_right = dst[current_height, width // 2 : width]
             line_left, line_right = np.where(img_left == 0), np.where(img_right == 0)
 
             if len(line_left[0]):
-                points_left[i] = line_left[0][-1]
+                points_left[i] = np.mean(line_left[0])
                 img_gray = cv2.circle(
                     img_gray, (points_left[i], current_height), 4, (0, 0, 255), 10
                 )
@@ -60,7 +60,7 @@ class Track:
                 points_left[i] = 0
 
             if len(line_right[0]):
-                points_right[i] = line_right[0][-1]
+                points_right[i] = np.mean(line_right[0]) + width // 2
                 img_gray = cv2.circle(
                     img_gray, (points_right[i], current_height), 4, (0, 0, 255), 10
                 )
@@ -73,6 +73,13 @@ class Track:
         right = np.mean(np.array([p for p in points_right if p != width - 1]))
         average = (left + right) / 2
         offset = np.abs(average - width / 2)
+        if np.isnan(left):
+            return CarStatus.LEFT
+        elif np.isnan(right):
+            return CarStatus.RIGHT
+        elif np.isnan(left) and np.isnan(right):
+            return CarStatus.FORWARD
+
         if offset < Config.DETECT_OFFSET:
             return CarStatus.FORWARD
         else:
