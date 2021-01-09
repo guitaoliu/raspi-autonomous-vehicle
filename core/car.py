@@ -79,7 +79,7 @@ class Car:
         if method == "two_line_track":
             while True:
                 time.sleep(Config.TRACK_PROCESS_INTERVAL)
-                self._track_line()
+                self._track_line_basic()
         elif method == "obstacle_avoid":
             while True:
                 time.sleep(Config.TRACK_PROCESS_INTERVAL)
@@ -100,7 +100,7 @@ class Car:
         )
         self._update(status)
 
-    def _track_line(self):
+    def _track_line_basic(self):
         status = self.track(self.camera.array_np)
         self._update(status)
 
