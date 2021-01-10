@@ -69,21 +69,33 @@ class Track:
 
         self._jpeg = convert_jpeg(img_gray)
 
-        left = np.mean(np.array([p for p in points_left if p != 0]))
-        right = np.mean(np.array([p for p in points_right if p != width - 1]))
+        left_valid = [p for p in points_left if p != 0]
+        right_valid = [p for p in points_right if p != 0]
+
+        # None of the lines were identified
+        if not left_valid and not right_valid:
+            return CarStatus.FORWARD
+
+        # Only the right side line was identified
+        if left_valid:
+            left = np.mean(left_valid)
+        else:
+            return CarStatus.RIGHT
+
+        # Only the left side line was identified
+        if right_valid:
+            right = np.mean(right_valid)
+        else:
+            return CarStatus.LEFT
+
+        # Both side lines were identified
         average = (left + right) / 2
         offset = np.abs(average - width / 2)
-        if np.isnan(left):
-            return CarStatus.LEFT
-        elif np.isnan(right):
-            return CarStatus.RIGHT
-        elif np.isnan(left) and np.isnan(right):
-            return CarStatus.FORWARD
 
         if offset < Config.DETECT_OFFSET:
             return CarStatus.FORWARD
         else:
-            if average - width / 2 < 0:
+            if average < width / 2:
                 return CarStatus.RIGHT
             else:
                 return CarStatus.LEFT
