@@ -1,11 +1,10 @@
 import argparse
 import logging
-from threading import Thread
 
 import RPi.GPIO as GPIO
 
 from core import car
-from web import app
+from utils import start_web
 
 logger = logging.getLogger(__name__)
 logging.basicConfig(
@@ -13,7 +12,7 @@ logging.basicConfig(
 )
 
 
-def load_parse() -> argparse.ArgumentParser:
+def load_parse():
     parser = argparse.ArgumentParser()
     parser.add_argument(
         "-m",
@@ -24,20 +23,15 @@ def load_parse() -> argparse.ArgumentParser:
         help="Car running method",
     )
     parser.add_argument("-w", "--web", action="store_true")
-    return parser
+    return parser.parse_args()
 
 
 def main():
-    args = load_parse().parse_args()
+    args = load_parse()
+
     if args.web:
-        Thread(
-            target=lambda: app.run(
-                host="0.0.0.0",
-                port="8080",
-                debug=False,
-                threaded=True,
-            )
-        ).start()
+        start_web()
+
     logger.info(f"Start car with {' '.join(args.method.split('_'))}")
     with car as c:
         try:

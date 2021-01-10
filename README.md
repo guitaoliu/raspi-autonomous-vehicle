@@ -47,6 +47,14 @@ Ultrasonic sensors are installed in front of the car and can be used to obtain t
 distance between the obstacle and the car. The accuracy is poor for places with more
 obstacles. It is defined in [ultrasound.py](plugins/ultrasound.py).
 
+## Web Page
+
+A simple web page based on `Flask` is provided to display the current camera shot as
+well as the car's sensor specific parameters and the vehicle's `CarStatus` at the time.
+
+Please visit `http://ip:8080` to fetch the data. You can modify it in [main.py](main.py)
+.
+
 ## Automatic Road Tracking
 
 ## Bluetooth Gamepad Controlled Movement
