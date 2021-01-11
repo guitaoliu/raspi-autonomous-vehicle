@@ -41,36 +41,42 @@ class Track:
         _, dst = cv2.threshold(img_red, 20, 255, cv2.THRESH_BINARY)
 
         height, width = dst.shape
-        points_left = np.zeros((self._lines, 1))
-        points_right = np.zeros((self._lines, 1))
+        points_left = np.zeros(self._lines)
+        points_left_height = np.zeros(self._lines)
+        points_right = np.zeros(self._lines)
+        points_right_height = np.zeros(self._lines)
         img_gray = cv2.cvtColor(dst, cv2.COLOR_GRAY2RGB)
 
         for i in range(self._lines):
             current_height = height - 1 - 15 * i
-            img_left = dst[current_height, 0 : width // 2]
-            img_right = dst[current_height, width // 2 : width]
+            img_left = img_gray[current_height, 0 : width // 2]
+            img_right = img_gray[current_height, width // 2 : width]
             line_left, line_right = np.where(img_left == 0), np.where(img_right == 0)
 
+            points_left_height[i] = current_height
+            points_right_height[i] = current_height
             if len(line_left[0]):
                 points_left[i] = np.mean(line_left[0])
-                img_gray = cv2.circle(
-                    img_gray, (points_left[i], current_height), 4, (0, 0, 255), 10
-                )
+                # img_gray = cv2.circle(
+                #     img_gray, (points_left[i], current_height), 4, (0, 0, 255), 10
+                # )
             else:
                 points_left[i] = 0
 
             if len(line_right[0]):
                 points_right[i] = np.mean(line_right[0]) + width // 2
-                img_gray = cv2.circle(
-                    img_gray, (points_right[i], current_height), 4, (0, 0, 255), 10
-                )
+                # img_gray = cv2.circle(
+                #     img_gray, (points_right[i], current_height), 4, (0, 0, 255), 10
+                # )
             else:
                 points_right[i] = width - 1
 
-        self._jpeg = convert_jpeg(img_gray)
+        # self._jpeg = convert_jpeg(img_gray)
 
-        left_valid = [p for p in points_left if p != 0]
-        right_valid = [p for p in points_right if p != 0]
+        left_valid = [p for p in zip(points_left, points_left_height) if p[0] != 0]
+        right_valid = [
+            p for p in zip(points_right, points_right_height) if p[0] != width - 1
+        ]
 
         # None of the lines were identified
         if not left_valid and not right_valid:
@@ -78,24 +84,32 @@ class Track:
 
         # Only the right side line was identified
         if left_valid:
-            left = np.mean(left_valid)
+            left = np.mean([p[0] for p in left_valid])
+            left_height = np.mean([p[1] for p in left_valid])
         else:
-            return CarStatus.RIGHT
+            return CarStatus.LEFT
 
         # Only the left side line was identified
         if right_valid:
-            right = np.mean(right_valid)
+            right = np.mean([p[0] for p in right_valid])
+            right_height = np.mean([p[1] for p in right_valid])
         else:
-            return CarStatus.LEFT
+            return CarStatus.RIGHT
 
         # Both side lines were identified
         average = (left + right) / 2
         offset = np.abs(average - width / 2)
-
-        if offset < Config.DETECT_OFFSET:
-            return CarStatus.FORWARD
-        else:
-            if average < width / 2:
-                return CarStatus.RIGHT
-            else:
+        offset_height = np.abs(left_height - right_height)
+        if offset_height > Config.DETECT_OFFSET:
+            if left_height < right_height:
                 return CarStatus.LEFT
+            else:
+                return CarStatus.RIGHT
+        else:
+            if offset < Config.DETECT_OFFSET:
+                return CarStatus.FORWARD
+            else:
+                if average < width / 2:
+                    return CarStatus.RIGHT
+                else:
+                    return CarStatus.LEFT
