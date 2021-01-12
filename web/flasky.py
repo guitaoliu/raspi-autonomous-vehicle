@@ -14,14 +14,14 @@ def index():
 
 @app.route("/cameraStream")
 def camera_stream():
-    source_type = request.args.get("type", default="plain", type=str)
+    source_type = request.args.get("sourceType", default="plain", type=str)
 
     def gen():
         while True:
             if source_type == "plain":
                 frame = car.camera.frame.tostring()
             elif source_type == "twoLine":
-                frame = car.track.jpeg
+                frame = car.track.jpeg.tostring()
             else:
                 frame = car.camera.frame.tostring()
             yield b"--frame\r\n" b"Content-Type: image/jpeg\r\n\r\n" + frame + b"\r\n"

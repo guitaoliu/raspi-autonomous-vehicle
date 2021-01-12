@@ -16,7 +16,18 @@
     </div>
     <div class="row">
         <div class="col-8 m-auto">
-            <img src="{{ url_for('camera_stream') }}" alt="Camera Preview">
+            <img
+                    src="{{ url_for('camera_stream') }}"
+                    alt="Camera Preview"
+                    id="img-preview"
+            >
+            <img
+                    src="{{ url_for('camera_stream', sourceType='twoLine' ) }}"
+                    alt="Camera Preview with Marks" id="marked-img-preview"
+                    style="display:none;"
+            >
+            <button class="btn btn-success mt-2 offset-4" id="change-view">Toggle Marks
+            </button>
         </div>
         <div class="col-4 m-auto">
             <table class="table border">
@@ -75,6 +86,22 @@
                 }
             })
         }, 1000)
+        const btn = $("#change-view")
+        const img = $("#img-preview")
+        const markedImg = $("#marked-img-preview")
+        btn.click(() => {
+            if (btn.hasClass("btn-success")) {
+                btn.removeClass("btn-success").addClass("btn-danger")
+                btn.text("Toggle Default")
+                img.hide()
+                markedImg.show()
+            } else {
+                btn.removeClass("btn-danger").addClass("btn-success")
+                btn.text("Toggle Marks")
+                img.show()
+                markedImg.hide()
+            }
+        })
     })
 </script>
 
