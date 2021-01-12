@@ -13,17 +13,17 @@ class Config:
     ULTRASOUND_ECHO_GPIO_BCM = 12
     ULTRASOUND_TRIGGER_GPIO_BCM = 16
 
-    SPEED_NORMAL = 50
+    SPEED_NORMAL = 58
     SPEED_FAST = 80
-    SPEED_SLOW = 30
+    SPEED_SLOW = 40
 
-    TRACK_PROCESS_INTERVAL = 0.05
-    PROCESS_LINES = 16
-    DETECT_OFFSET = 50
+    TRACK_PROCESS_INTERVAL = 0.03
+    PROCESS_LINES = 4
+    DETECT_OFFSET = 100
 
 
 class CarStatus(enum.Enum):
-    NONE = enum.auto
+    NONE = enum.auto()
     STOP = enum.auto()
     PAUSE = enum.auto()
     FORWARD = enum.auto()

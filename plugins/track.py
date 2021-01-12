@@ -42,9 +42,7 @@ class Track:
 
         height, width = dst.shape
         points_left = np.zeros(self._lines)
-        points_left_height = np.zeros(self._lines)
         points_right = np.zeros(self._lines)
-        points_right_height = np.zeros(self._lines)
         img_gray = cv2.cvtColor(dst, cv2.COLOR_GRAY2RGB)
 
         for i in range(self._lines):
@@ -53,10 +51,8 @@ class Track:
             img_right = img_gray[current_height, width // 2 : width]
             line_left, line_right = np.where(img_left == 0), np.where(img_right == 0)
 
-            points_left_height[i] = current_height
-            points_right_height[i] = current_height
             if len(line_left[0]):
-                points_left[i] = np.mean(line_left[0])
+                points_left[i] = np.max(line_left[0])
                 # img_gray = cv2.circle(
                 #     img_gray, (points_left[i], current_height), 4, (0, 0, 255), 10
                 # )
@@ -64,7 +60,7 @@ class Track:
                 points_left[i] = 0
 
             if len(line_right[0]):
-                points_right[i] = np.mean(line_right[0]) + width // 2
+                points_right[i] = np.min(line_right[0]) + width // 2
                 # img_gray = cv2.circle(
                 #     img_gray, (points_right[i], current_height), 4, (0, 0, 255), 10
                 # )
@@ -73,43 +69,32 @@ class Track:
 
         # self._jpeg = convert_jpeg(img_gray)
 
-        left_valid = [p for p in zip(points_left, points_left_height) if p[0] != 0]
-        right_valid = [
-            p for p in zip(points_right, points_right_height) if p[0] != width - 1
-        ]
+        left_valid = [p for p in points_left if p != 0]
+        right_valid = [p for p in points_right if p != width - 1]
 
-        # None of the lines were identified
-        if not left_valid and not right_valid:
-            return CarStatus.FORWARD
+        left = np.mean([p for p in left_valid]) if left_valid else None
+        right = np.mean([p for p in right_valid]) if right_valid else None
 
-        # Only the right side line was identified
-        if left_valid:
-            left = np.mean([p[0] for p in left_valid])
-            left_height = np.mean([p[1] for p in left_valid])
-        else:
-            return CarStatus.LEFT
-
-        # Only the left side line was identified
-        if right_valid:
-            right = np.mean([p[0] for p in right_valid])
-            right_height = np.mean([p[1] for p in right_valid])
-        else:
-            return CarStatus.RIGHT
-
-        # Both side lines were identified
-        average = (left + right) / 2
-        offset = np.abs(average - width / 2)
-        offset_height = np.abs(left_height - right_height)
-        if offset_height > Config.DETECT_OFFSET:
-            if left_height < right_height:
+        if not left and not right:
+            logger.debug("No line detected.")
+            return CarStatus.NONE
+        elif not left:
+            logger.debug("No left line detected.")
+            if right > width - Config.DETECT_OFFSET:
+                return CarStatus.FORWARD_SLOW
+            elif right < width // 2 + Config.DETECT_OFFSET * 0.60:
+                logger.debug("Turn left.")
                 return CarStatus.LEFT
             else:
+                return CarStatus.LEFT_SLOW
+        elif not right:
+            logger.debug("No right line detected.")
+            if left < Config.DETECT_OFFSET:
+                return CarStatus.FORWARD_SLOW
+            elif left > width // 2 - Config.DETECT_OFFSET * 0.60:
+                logger.debug("Turn right.")
                 return CarStatus.RIGHT
-        else:
-            if offset < Config.DETECT_OFFSET:
-                return CarStatus.FORWARD
             else:
-                if average < width / 2:
-                    return CarStatus.RIGHT
-                else:
-                    return CarStatus.LEFT
+                return CarStatus.RIGHT_SLOW
+        else:
+            return CarStatus.FORWARD_SLOW
