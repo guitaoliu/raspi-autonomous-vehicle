@@ -21,7 +21,7 @@ class Camera:
     def __init__(self) -> None:
         self._ca = picamera.PiCamera()
         self._ca.resolution = (640, 480)
-        self._ca.framerate = 60
+        self._ca.framerate = 40
 
         self.array = PiRGBArray(self._ca, size=(640, 480))
         self.array_np = None
