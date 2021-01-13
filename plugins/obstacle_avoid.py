@@ -36,9 +36,9 @@ class ObstacleAvoid:
         elif left and right:
             return CarStatus.BACKWARD
         else:
-            if distance < 20:
+            if distance < 40:
                 return CarStatus.LEFT
             elif distance < 100:
-                return CarStatus.FORWARD
+                return CarStatus.FORWARD_SLOW
             else:
-                return CarStatus.FORWARD_FAST
+                return CarStatus.FORWARD
