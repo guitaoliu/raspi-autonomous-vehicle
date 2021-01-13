@@ -6,7 +6,7 @@ import numpy as np
 import picamera
 from picamera.array import PiRGBArray
 
-from utils import convert_jpeg
+from config import Config
 
 logger = logging.getLogger(__name__)
 
@@ -20,12 +20,11 @@ class Camera:
 
     def __init__(self) -> None:
         self._ca = picamera.PiCamera()
-        self._ca.resolution = (640, 480)
-        self._ca.framerate = 40
+        self._ca.resolution = (Config.WIDTH, Config.HEIGHT)
+        self._ca.framerate = 30
 
-        self.array = PiRGBArray(self._ca, size=(640, 480))
+        self.array = PiRGBArray(self._ca, size=(Config.WIDTH, Config.HEIGHT))
         self.array_np = None
-        self.frame = None
         self.start()
 
     def start(self) -> None:
@@ -46,5 +45,4 @@ class Camera:
         """
         for r in self._ca.capture_continuous(self.array, "bgr", use_video_port=True):
             self.array_np = np.copy(r.array)
-            self.frame = convert_jpeg(self.array_np)
             self.array.truncate(0)

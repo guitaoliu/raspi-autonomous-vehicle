@@ -123,6 +123,7 @@ class Car:
 
     def _loop(self) -> None:
         while self._is_loop:
+            time.sleep(Config.TRACK_PROCESS_INTERVAL)
             self._move()
 
     def _move(self) -> None:

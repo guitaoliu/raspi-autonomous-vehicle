@@ -79,7 +79,7 @@ class Motor:
             speed (int): motor electrical signal duty cycle。
         """
         self.motor_1.ChangeDutyCycle(0)
-        self.motor_2.ChangeDutyCycle(0)
+        self.motor_2.ChangeDutyCycle(speed)
         self.motor_3.ChangeDutyCycle(speed)
         self.motor_4.ChangeDutyCycle(0)
         # logger.debug("Turn right.")
@@ -93,5 +93,5 @@ class Motor:
         self.motor_1.ChangeDutyCycle(speed)
         self.motor_2.ChangeDutyCycle(0)
         self.motor_3.ChangeDutyCycle(0)
-        self.motor_4.ChangeDutyCycle(0)
+        self.motor_4.ChangeDutyCycle(speed)
         # logger.debug("Turn left.")

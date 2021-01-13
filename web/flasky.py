@@ -2,6 +2,7 @@ from flask import Flask, Response, jsonify, render_template, request
 from flask_cors import CORS
 
 from core import car
+from utils import convert_jpeg
 
 app = Flask(__name__, template_folder="./templates", static_folder="./static")
 CORS(app, supports_credentials=True, resources=r"/*")
@@ -19,11 +20,11 @@ def camera_stream():
     def gen():
         while True:
             if source_type == "plain":
-                frame = car.camera.frame.tostring()
+                frame = convert_jpeg(car.camera.array_np).tostring()
             elif source_type == "twoLine":
-                frame = car.track.jpeg.tostring()
+                frame = convert_jpeg(car.track.jpeg).tostring()
             else:
-                frame = car.camera.frame.tostring()
+                frame = convert_jpeg(car.camera.array_np).tostring()
             yield b"--frame\r\n" b"Content-Type: image/jpeg\r\n\r\n" + frame + b"\r\n"
 
     return Response(gen(), mimetype="multipart/x-mixed-replace; boundary=frame")
