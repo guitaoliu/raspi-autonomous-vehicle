@@ -57,6 +57,12 @@ Please visit `http://ip:8080` to fetch the data. You can modify it in [main.py](
 
 ## Automatic Road Tracking
 
+We only use the camera for line tracking. By splitting the image into left and right parts,
+we can determine the position of the left and right track lines and make a straight and
+turning decision based on the track line position.
+
+All related codes are in [track.py](plugins/track.py).
+
 ## Bluetooth Gamepad Controlled Movement
 
 The controller provides interaction with the xbox one gamepad to control movement via
@@ -77,11 +83,11 @@ logic is defined in [obstacle_avoid.py](plugins/obstacle_avoid.py).
 
 ## Authors
 
-* [guitaoliu](https://github.com/guitaoliu)
-* [XDong18](https://github.com/XDong18)
-* [merak0514](https://github.com/merak0514)
-* [yfc12138](https://github.com/yfc12138)
-* [aiueo115](https://github.com/aiueo115)
+- [guitaoliu](https://github.com/guitaoliu)
+- [XDong18](https://github.com/XDong18)
+- [merak0514](https://github.com/merak0514)
+- [yfc12138](https://github.com/yfc12138)
+- [aiueo115](https://github.com/aiueo115)
 
 ## License
 

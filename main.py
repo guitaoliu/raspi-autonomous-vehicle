@@ -9,14 +9,13 @@ from web import app
 
 logger = logging.getLogger(__name__)
 logging.basicConfig(
-    level=logging.DEBUG, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+    level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
 )
 
 
 def load_parse():
     parser = argparse.ArgumentParser()
     parser.add_argument(
-        "-m",
         "--method",
         type=str,
         default="two_line_track",
@@ -41,12 +40,13 @@ def main():
         ).start()
 
     logger.info(f"Start car with {' '.join(args.method.split('_'))}")
-    with car as c:
-        try:
-            c.run(method=args.method)
-        except KeyboardInterrupt:
-            c.camera.close()
-            GPIO.cleanup()
+    if args.method != "None":
+        with car as c:
+            try:
+                c.run(method=args.method)
+            except KeyboardInterrupt:
+                c.camera.close()
+                GPIO.cleanup()
 
 
 if __name__ == "__main__":
