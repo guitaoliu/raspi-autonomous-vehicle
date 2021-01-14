@@ -18,7 +18,7 @@ class Config:
 
     SPEED_NORMAL = 60
     SPEED_FAST = 100
-    SPEED_SLOW = 35
+    SPEED_SLOW = 38
 
     TRACK_PROCESS_INTERVAL = 0.05
 
@@ -44,9 +44,3 @@ class CarStatus(enum.Enum):
     BACKWARD = enum.auto()
     BACKWARD_FAST = enum.auto()
     BACKWARD_SLOW = enum.auto()
-
-
-class PathType(enum.Enum):
-    BothSides = enum.auto()
-    OneSide = enum.auto()
-    NonSide = enum.auto()
