@@ -15,7 +15,7 @@ class InfraRedSensor:
     direction.
     """
 
-    def __init__(self) -> None:
+    def __init__(self):
         self.left = Config.INFRARED_LEFT_GPIO_BCM
         self.right = Config.INFRARED_RIGHT_GPIO_BCM
         GPIO.setup(self.left, GPIO.IN)

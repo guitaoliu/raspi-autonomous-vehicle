@@ -17,7 +17,7 @@ logger = logging.getLogger(__name__)
 
 
 class Car:
-    def __init__(self) -> None:
+    def __init__(self):
         self._status = [
             CarStatus.PAUSE,
         ]
@@ -67,7 +67,7 @@ class Car:
         threading.Thread(target=self._loop).start()
         return self
 
-    def __exit__(self, exc_type, exc_val, exc_tb) -> None:
+    def __exit__(self, exc_type, exc_val, exc_tb):
         self._is_loop = False
         self._stop()
 
@@ -75,7 +75,7 @@ class Car:
     def status(self) -> CarStatus:
         return self._status[0]
 
-    def run(self, method: str):
+    def run(self, method: str) -> None:
         if method == "two_line_track":
             while True:
                 time.sleep(Config.TRACK_PROCESS_INTERVAL)
@@ -94,17 +94,17 @@ class Car:
         else:
             logger.fatal(f"Method {' '.join(method.split('_'))} is not supported")
 
-    def _obstacle_avoid(self):
+    def _obstacle_avoid(self) -> None:
         status = self.obstacle_avoid(
             obstacle_status=self.obstacle(), distance=self.distance()
         )
         self._update(status)
 
-    def _track_line_basic(self):
+    def _track_line_basic(self) -> None:
         status = self.track(self.camera.array_np)
         self._update(status)
 
-    def _bluetooth_controller(self):
+    def _bluetooth_controller(self) -> None:
         status = self.controller()
         self._update(status)
 

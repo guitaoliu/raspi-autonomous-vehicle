@@ -28,7 +28,7 @@ class ObstacleAvoid:
             CarStatus: next CarStatus
         """
         left, right = obstacle_status
-        logger.info(f"Car status: left: {left}, right: {right}, distance: {distance}")
+        logger.debug(f"Car status: left: {left}, right: {right}, distance: {distance}")
         if left and not right:
             return CarStatus.RIGHT
         elif not left and right:

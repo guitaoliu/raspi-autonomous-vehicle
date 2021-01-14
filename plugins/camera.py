@@ -18,7 +18,7 @@ class Camera:
 
     """
 
-    def __init__(self) -> None:
+    def __init__(self):
         self._ca = picamera.PiCamera()
         self._ca.resolution = (Config.WIDTH, Config.HEIGHT)
         self._ca.framerate = 30
@@ -34,11 +34,11 @@ class Camera:
         threading.Thread(target=lambda: self._gen()).start()
         time.sleep(1)
 
-    def close(self):
+    def close(self) -> None:
         logger.debug("Camera stopped")
         self._ca.close()
 
-    def _gen(self):
+    def _gen(self) -> None:
         """
         Generate raw numpy array and jpeg raw data. The numpy array is stored in
         self.array_np, and the jpeg data is stored in self.frame.

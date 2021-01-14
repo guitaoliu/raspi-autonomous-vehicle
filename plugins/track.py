@@ -12,27 +12,21 @@ logger = logging.getLogger(__name__)
 
 
 class Track:
-    def __init__(self):
+    def __init__(self) -> None:
         self._jpeg = None
         self._lines = Config.PROCESS_LINES
 
     def __call__(self, img: ndarray, method: Optional[str] = "basic") -> CarStatus:
         if method == "basic":
             status = self.basic(img)
-        elif method == "two":
-            status = self.other(img)
         else:
             status = CarStatus.PAUSE
             logger.fatal(f"unknown method {method}")
         return status
 
     @property
-    def jpeg(self):
+    def jpeg(self) -> ndarray:
         return self._jpeg
-
-    def other(self, img: ndarray) -> CarStatus:
-        _ = img
-        return CarStatus.PAUSE
 
     def basic(self, img: ndarray) -> CarStatus:
         start = time.perf_counter()
